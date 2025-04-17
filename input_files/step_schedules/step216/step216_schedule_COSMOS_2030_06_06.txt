@@ -1,0 +1,4 @@
+#Site           Telescope        Latitude [deg] Longitude [deg]   Elevation [m]
+Cerro-Chajnantor FYST                    -22.986         -67.740          5610.0
+#     Start time UTC        Stop time UTC Rotation Patch name                            Az min   Az max       El  Pass Sub
+ 2030-06-06 00:05:00  2030-06-06 00:10:00     0.00 COSMOS_2030_06_06                     297.38   300.46    45.80     0   1
