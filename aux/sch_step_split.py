@@ -54,7 +54,8 @@ def process_file(file_path):
         step_dir = os.path.join(outdir, chunk_name)
         os.makedirs(step_dir, exist_ok=True)
 
-        output_filename = f"{chunk_name}_{original_filename}"
+        # output_filename = f"{chunk_name}_{original_filename}"
+        output_filename = f"{original_filename}"
         output_path = os.path.join(step_dir, output_filename)
         with open(output_path, 'w') as f_out:
             f_out.writelines(header_lines + chunk_data)

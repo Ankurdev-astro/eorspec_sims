@@ -1,11 +1,12 @@
-f327 : chnl_327: 2 steps, total ndets = 564 (all)
-    f327_step210_d308_dettable.h5       step210 (300)
-    f327_step216_d256_dettable.h5       step216 (200)
+# f327 : chnl_327: 2 steps, total ndets = 564 (all)
+#     f327_step210_d308_dettable.h5       step210 (300)
+#     f327_step216_d256_dettable.h5       step216 (200)
 
-f330 : chnl_330: 2 steps, total ndets = 556 (all)
-    f330_step210_d268_dettable.h5       step210  (250)
-    f330_step216_d288_dettable.h5       step216  (250)
+# f330 : chnl_330: 2 steps, total ndets = 556 (all)
+#     f330_step210_d268_dettable.h5       step210  (250)
+#     f330_step216_d288_dettable.h5       step216  (250)
 
+### Begins Here
 f333 : chnl_333: 2 steps, total ndets = 521 (all)
     f333_step210_d219_dettable.h5       step210  (200)
     f333_step216_d302_dettable.h5       step216  (300)

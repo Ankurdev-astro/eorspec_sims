@@ -1,16 +1,16 @@
 ###
 #Timestream Simulation Script for EoR-Spec
 ###
-###Last updated: April 07, 2025
+###Last updated: April 18, 2025
 ###
 #Author: Ankur Dev, adev@astro.uni-bonn-de
 ###
 ###Logbook###
 ###
 ###Personal Notes and Updates:
-
+#
 #ToDo: Check max PWV
-#ToDo: Assign ATM realization
+#
 ###
 ###[Self]Updates Log:
 #20-02-2024: Scraping TOAST2, Begin migration
@@ -33,19 +33,24 @@
 #01-03-2025: Implemented MPI for schedules, Implemented CAR on new Tomography
 #01-03-2025: Implemented h5 FP instead of pkl
 #07-04-2025: Allow automatic choosing max ndets and FPI step for and FPI channel
+#15-04-2025: Reduced parameter in schedule: Track center&width to 2 Degrees
+#15-04-2025: Allow setting ndets as required per chnl and step
+#15-04-2025: Re-did schedules to focus on FPI_step; 
+# One schedule simulates FPI_step_i for all times in a day in which i_th step observes 
+# Schedule now scans FPI_step_i and then jumps in time to next FPI_step_i
+#18-04-2025: Fix Atm realization based on realization_uid (unique per day)
 ###
 
 """
 Description:
-Timestream Simulation Script for Prime-cam.
+Timestream Simulation Script for EoR-Spec Instrument on PrimeCam
 This script is modified from TOAST Ground Simulation to perform timestream simulation
-for Prime-Cam with FYST. Note: this is a work in progress.
+for EoR-Spec FPI with FYST. Note: this is a work in progress.
 
 The script demonstrates an example workflow, from generating loading detectors, scanning
-an input map, making detailed atmospheric simulation and generating mock detector timestreams. 
-for more complex simulations tailored to specific experimental needs.
+an input map, making detailed atmospheric simulation and generating mock detector timestreams.
 
-Usage:
+Based on framework TOAST3:
 Ref: https://github.com/hpc4cmb/toast/blob/toast3/workflows/toast_sim_ground.py
 Ref: TOAST3 Documentation: https://toast-cmb.readthedocs.io/en/toast3/intro.html
 
@@ -56,6 +61,7 @@ import toast
 import toast.io as io
 import toast.ops
 from toast.mpi import MPI
+from toast.utils import name_UID
 
 from scripts.helper_scripts.calc_groupsize import job_group_size, estimate_group_size
 
@@ -67,7 +73,6 @@ import h5py
 from datetime import datetime
 import os, re
 import argparse
-import random
 import time as t
 
 
@@ -183,7 +188,6 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
     sim_ground.max_pwv = 1.41 * u.mm #Truncate PWV
     sim_ground.median_weather = False
     
-    # exit(1)
     #=============================#
     ### El Nod Tests ###
 
@@ -197,7 +201,20 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
     sim_ground.apply(data)
     
     log.info_rank(f"Number of Observations loaded: {len(data.obs)}", world_comm)
+    
+    #==============================#
+    ### Include Realization and FPI info
+    for obs in data.obs:
+        obs['realization_name'] = obs.session.name.split('-')[0]
+        obs['realization_uid'] = name_UID(obs['realization_name'])
+        obs['FPI_channel'] = f'f{args.parsed_args.chnl}'
+        obs['FPI_step'] = args.parsed_args.step
 
+    log.info_rank(f"Realization name: {data.obs[0]['realization_name']}", world_comm)
+    log.info_rank(f"Realization UID: {data.obs[0]['realization_uid']}", world_comm)
+    log.info_rank(f"FPI channel: {data.obs[0]['FPI_channel']}", world_comm)
+    log.info_rank(f"FPI step: {data.obs[0]['FPI_step']}", world_comm)
+    
     #=============================#
     # Detector Pointing
     pixels_wcs_radec = toast.ops.PixelsWCS(
@@ -324,10 +341,10 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
     # Atmospheric simulation
     log.info_rank(f"Atmospheric simulation...", world_comm)
     #Atmosphere set-up
-    rand_realisation = random.randint(10000, 99999)
+    # rand_realisation = random.randint(10000, 99999)
+    atm_realization = data.obs[0]['realization_uid']
     tel_fov = 1.5* u.deg
     cache_dir = "./atm_cache"
-
 
     sim_atm_coarse =toast.ops.SimAtmosphere(
                     name="sim_atm_coarse",
@@ -342,13 +359,12 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
                     zmax=2000 * u.m,
                     nelem_sim_max=30000,
                     gain=1e-5, #changed 04.02.2025 # 2e-5
-                    realization=1000000,
                     wind_dist=10000 * u.m,
                     enabled=False,
                     cache_dir=cache_dir,
                 )
 
-    sim_atm_coarse.realization = 1000000 + rand_realisation
+    sim_atm_coarse.realization = 1000000 + atm_realization  # changed 18.04.2025
     sim_atm_coarse.field_of_view = tel_fov
     sim_atm_coarse.detector_pointing = det_pointing_azel
     sim_atm_coarse.enabled = args.sim_atm # Toggle to False to disable
@@ -375,7 +391,7 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
             cache_dir=cache_dir,
         )
 
-    sim_atm_fine.realization = rand_realisation
+    sim_atm_fine.realization = atm_realization  # changed 18.04.2025
     sim_atm_fine.field_of_view = tel_fov
     
     sim_atm_fine.detector_pointing = det_pointing_azel
@@ -415,10 +431,10 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
     log.info_rank(f"After Scanning Input Map:  {mem}", world_comm)
 
     #=============================#
-    # # Simulate detector noise
-    # sim_noise = toast.ops.SimNoise(name="sim_noise")
-    # sim_noise.noise_model = elevation_model.out_model
-    # sim_noise.apply(data)
+    # Simulate detector noise
+    sim_noise = toast.ops.SimNoise(name="sim_noise")
+    sim_noise.noise_model = elevation_model.out_model
+    sim_noise.apply(data)
 
     #=============================#
 

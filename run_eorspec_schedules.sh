@@ -61,7 +61,7 @@ do
     # Run the MPI command with the current schedule file
     # (nice -n 10 bash -c "echo -e '\n****************\n' ; /usr/bin/time -v mpirun -np 16 python sim_data_primecam_mpi.py -s \"$SCH_NAME\"") 2>&1 | tee -a toast_270924_arc10.log
     mpirun -n 32 python sim_data_eorspec_mpi.py -s $SCH_NAME -c 368
-    # python sim_data_eorspec_mpi.py -s schedule_COSMOS_05_01.txt -c 327 --step step216 -d 200
+    # python sim_data_eorspec_mpi.py -s schedule_COSMOS_2027_06_01.txt -c 333 --step step216 -d 300
 
     # -g GRP_SIZE sets the number of processes per group
     # N_GRP = N_TASKS / GRP_SIZE
