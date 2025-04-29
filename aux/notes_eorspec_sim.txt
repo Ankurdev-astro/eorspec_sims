@@ -1,95 +1,167 @@
-# f327 : chnl_327: 2 steps, total ndets = 564 (all)
-#     f327_step210_d308_dettable.h5       step210 (300)
-#     f327_step216_d256_dettable.h5       step216 (200)
 
-# f330 : chnl_330: 2 steps, total ndets = 556 (all)
-#     f330_step210_d268_dettable.h5       step210  (250)
-#     f330_step216_d288_dettable.h5       step216  (250)
-
-### Begins Here
-f333 : chnl_333: 2 steps, total ndets = 521 (all)
-    f333_step210_d219_dettable.h5       step210  (200)
-    f333_step216_d302_dettable.h5       step216  (300)
-
-f337 : chnl_337: 3 steps, total ndets = 786 (514)
-    f337_step210_d210_dettable.h5       step210  (200)  
-    f337_step216_d304_dettable.h5       step216  (300)
-    f337_step222_d272_dettable.h5
-
-f340 : chnl_340: 3 steps, total ndets = 739 (544)
-    f340_step210_d195_dettable.h5       
-    f340_step216_d260_dettable.h5       step216  (250)
-    f340_step222_d284_dettable.h5       step222  (250)
-
-f343 : chnl_343: 4 steps, total ndets = 892 (528)
-    f343_step210_d170_dettable.h5
-    f343_step216_d218_dettable.h5       step216  (200)
-    f343_step222_d310_dettable.h5       step222  (300)
-    f343_step228_d194_dettable.h5
-
-f347 : chnl_347: 4 steps, total ndets = 952 (511)
-    f347_step210_d165_dettable.h5
-    f347_step216_d207_dettable.h5       step216  (200)
-    f347_step222_d304_dettable.h5       step222  (300)
-    f347_step228_d276_dettable.h5
-
-f350 : chnl_350: 4 steps, total ndets = 875 (537)
-    f350_step210_d159_dettable.h5
-    f350_step216_d179_dettable.h5       
-    f350_step222_d245_dettable.h5       step222  (210)
-    f350_step228_d292_dettable.h5       step228  (290)
-
-f354 : chnl_354: 5 steps, total ndets = 1021 (522)
-    f354_step210_d148_dettable.h5
-    f354_step216_d173_dettable.h5
-    f354_step222_d214_dettable.h5       step222  (200)
-    f354_step228_d308_dettable.h5       step228  (300)
-    f354_step235_d178_dettable.h5
-
-f357 : chnl_357: 5 steps, total ndets = 1082 (572)
-    f357_step210_d142_dettable.h5
-    f357_step216_d171_dettable.h5
-    f357_step222_d197_dettable.h5
-    f357_step228_d290_dettable.h5       step228  (250)
-    f357_step235_d282_dettable.h5       step235  (250)
-
-f361 : chnl_361: 5 steps, total ndets = 960 (518)
-    f361_step210_d113_dettable.h5
-    f361_step216_d148_dettable.h5
-    f361_step222_d181_dettable.h5
-    f361_step228_d224_dettable.h5       step228  (210)
-    f361_step235_d294_dettable.h5       step235  (290)
-
-f365 : chnl_365: 6 steps, total ndets = 1155 (552)
-    f365_step210_d66_dettable.h5
-    f365_step216_d150_dettable.h5
-    f365_step222_d171_dettable.h5
-    f365_step228_d216_dettable.h5
-    f365_step235_d298_dettable.h5       step228  (250)
-    f365_step241_d254_dettable.h5       step235  (250)
-
-f368 :chnl_368: 6 steps, total ndets = 1136 (497)
-    f368_step216_d149_dettable.h5
-    f368_step222_d160_dettable.h5
-    f368_step228_d195_dettable.h5       step228  (195)
-    f368_step235_d302_dettable.h5       step235  (302)
-    f368_step241_d290_dettable.h5       
-    f368_step210_d40_dettable.h5
-
-
+├── chnl_330 (None)
+│   ├── step210 
+│   │   └── f330_step210_d268_dettable.h5
+│   ├── step216
+│   │   └── f330_step216_d288_dettable.h5
+│   ├── step294
+│   │   └── f330_step294_d151_dettable.h5
+│   ├── step303
+│   │   └── f330_step303_d187_dettable.h5
+│   └── step312
+│       └── f330_step312_d221_dettable.h5
+|
+├── chnl_333  (step210, step216)
+│   ├── step210  (d200)
+│   │   └── f333_step210_d219_dettable.h5
+│   ├── step216  (d300)
+│   │   └── f333_step216_d302_dettable.h5
+│   ├── step222
+│   │   └── f333_step222_d108_dettable.h5
+│   ├── step294
+│   │   └── f333_step294_d392_dettable.h5
+│   ├── step303
+│   │   └── f333_step303_d165_dettable.h5
+│   └── step312
+│       └── f333_step312_d208_dettable.h5
+|
+├── chnl_337  (step210, step216)
+│   ├── step210  (d200)
+│   │   └── f337_step210_d210_dettable.h5
+│   ├── step216  (d300)
+│   │   └── f337_step216_d304_dettable.h5
+│   ├── step222
+│   │   └── f337_step222_d272_dettable.h5
+│   ├── step303
+│   │   └── f337_step303_d156_dettable.h5
+│   └── step312
+│       └── f337_step312_d189_dettable.h5
+|
+├── chnl_340  (step216, step222)
+│   ├── step210  
+│   │   └── f340_step210_d195_dettable.h5
+│   ├── step216  (d250)
+│   │   └── f340_step216_d260_dettable.h5
+│   ├── step222  (d250)
+│   │   └── f340_step222_d284_dettable.h5
+│   ├── step303
+│   │   └── f340_step303_d147_dettable.h5
+│   └── step312
+│       └── f340_step312_d180_dettable.h5
+|
+├── chnl_343  (step216, step222)
+│   ├── step210
+│   │   └── f343_step210_d170_dettable.h5
+│   ├── step216  (d200)
+│   │   └── f343_step216_d218_dettable.h5
+│   ├── step222  (d300)
+│   │   └── f343_step222_d310_dettable.h5
+│   ├── step228
+│   │   └── f343_step228_d194_dettable.h5
+│   ├── step303
+│   │   └── f343_step303_d400_dettable.h5
+│   └── step312
+│       └── f343_step312_d163_dettable.h5
+|
+├── chnl_347  (step216, step222)
+│   ├── step210 
+│   │   └── f347_step210_d165_dettable.h5
+│   ├── step216  (d200)
+│   │   └── f347_step216_d207_dettable.h5
+│   ├── step222  (d300)
+│   │   └── f347_step222_d304_dettable.h5
+│   ├── step228
+│   │   └── f347_step228_d276_dettable.h5
+│   └── step312
+│       └── f347_step312_d159_dettable.h5
+|
+├── chnl_350  (step222, step228)
+│   ├── step210
+│   │   └── f350_step210_d159_dettable.h5
+│   ├── step216
+│   │   └── f350_step216_d179_dettable.h5
+│   ├── step222  (d210)
+│   │   └── f350_step222_d245_dettable.h5
+│   ├── step228  (d290)
+│   │   └── f350_step228_d292_dettable.h5
+│   └── step312
+│       └── f350_step312_d144_dettable.h5
+|
+├── chnl_354  (step222, step228)
+│   ├── step210
+│   │   └── f354_step210_d148_dettable.h5
+│   ├── step216
+│   │   └── f354_step216_d173_dettable.h5
+│   ├── step222  (d200)
+│   │   └── f354_step222_d214_dettable.h5
+│   ├── step228  (d300)
+│   │   └── f354_step228_d308_dettable.h5
+│   ├── step235
+│   │   └── f354_step235_d178_dettable.h5
+│   └── step312
+│       └── f354_step312_d392_dettable.h5
+|
+├── chnl_357   (step228, step235)
+│   ├── step210
+│   │   └── f357_step210_d384_dettable.h5
+│   ├── step216
+│   │   └── f357_step216_d171_dettable.h5
+│   ├── step222
+│   │   └── f357_step222_d197_dettable.h5
+│   ├── step228  (d250)
+│   │   └── f357_step228_d290_dettable.h5
+│   └── step235  (d250)
+│       └── f357_step235_d282_dettable.h5
+|
+├── chnl_361   (step228, step235)
+│   ├── step216
+│   │   └── f361_step216_d148_dettable.h5
+│   ├── step222
+│   │   └── f361_step222_d181_dettable.h5
+│   ├── step228  (d210)
+│   │   └── f361_step228_d224_dettable.h5
+│   ├── step235  (d290)
+│   │   └── f361_step235_d294_dettable.h5
+│   └── step241
+│       └── f361_step241_d54_dettable.h5
+|
+├── chnl_365   (step228, step235)
+│   ├── step216
+│   │   └── f365_step216_d150_dettable.h5
+│   ├── step222
+│   │   └── f365_step222_d171_dettable.h5
+│   ├── step228  (d210)
+│   │   └── f365_step228_d216_dettable.h5
+│   ├── step235  (d290)
+│   │   └── f365_step235_d298_dettable.h5
+│   └── step241
+│       └── f365_step241_d254_dettable.h5
+|
+├── chnl_368   (step216, step222) -- None
+│   ├── step216  (d350)
+│   │   └── f368_step216_d362_dettable.h5
+│   ├── step222  (d150)
+│   │   └── f368_step222_d160_dettable.h5
+│   ├── step228
+│   │   └── f368_step228_d195_dettable.h5
+│   ├── step235
+│   │   └── f368_step235_d302_dettable.h5
+│   └── step241
+│       └── f368_step241_d290_dettable.h5
 
 Notes:
-We will select thin_fp of each channel and each step. Each channel shall accumulate to 500 detectors. (ToDo)
+We will select thin_fp of each channel and each step. Each channel shall accumulate to 500 detectors.
 For each step we shall keep one set of schedules. Our range of steps are step210, step216, step222, step228, step235.
-So we need 5 sets of not - intervening schedules, each going to 130 hours (ToDo)
+So we need 5 sets of not - intervening schedules, each going to 130 hours
 Each channel only gets observed by 2 different steps. Total hours per channel = 260 hours
 
 We do this to keep n_dets * n_hours a constant across all freq = 200*130 + 300*130 = 500*130 = 65,000 
 This is 50% of total EoR-Spec data per channel (1000 Beams * 130 Hours) = 130,000
 
-For each step, run all f_channel for entire schedule. Steps define the schedule. 
+For each f_channel, run all the selected steps with selected ndets with all schedules assigned to that step. 
+Steps define the schedule. 
 Within each step we shall have the corresponding frequencies, but not all frequencies.
-Each schedule in each step, for all frequencies should have same atmospheric realization
+All frequencies and steps in a day have same atmospheric realization
 
 Data reduction:
 We will make maps for each frequency, processing per step.

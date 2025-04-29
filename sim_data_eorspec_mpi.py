@@ -75,6 +75,11 @@ import os, re
 import argparse
 import time as t
 
+import warnings
+from erfa import ErfaWarning
+warnings.simplefilter('ignore', ErfaWarning)
+
+
 
 # Define the global args class
 class Args:
@@ -94,8 +99,8 @@ class Args:
     
         self.h5_outdir = os.path.join(
             ".", "ccat_datacenter_mock", 
-            "new_CII_tomo_dump", 
-            f"deg2-0_data_COSMOS_f{parsed_args.chnl}"
+            "data_CII_tomo", 
+            f"data_COSMOS_f{parsed_args.chnl}"
         )
 
         # CAR set-up for WCS Pixel Operator

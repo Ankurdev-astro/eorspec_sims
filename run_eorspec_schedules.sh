@@ -5,25 +5,17 @@ export OMP_NUM_THREADS=4
 echo "$(which python)"
 echo "$(python --version)"
 
-###### DEBUG ######
 ###################
-#echo ""
-#echo "****************"
-#echo ""
-#echo "Running DEBUG simulation for 1 scan"
-#echo ""
-#echo "****************"
-#
-#mpirun -np 32 xxx
-#exit 1
-#
+####  CONFIG   ####
 ###################
+CHANNEL=337
+STEP='step216'
+NDETS=300
 ###################
-
 
 # Directory containing the schedule files
-SCHEDULE_DIR="input_files/schedules"
-SCHEDULE_FILES=("$SCHEDULE_DIR"/*.txt)
+SCHEDULE_DIR="input_files/step_schedules"
+SCHEDULE_FILES=("$SCHEDULE_DIR"/"$STEP"/*.txt)
 
 # Default values for start and stop indices
 START_IDX=0
@@ -60,7 +52,7 @@ do
     echo "****************"
     # Run the MPI command with the current schedule file
     # (nice -n 10 bash -c "echo -e '\n****************\n' ; /usr/bin/time -v mpirun -np 16 python sim_data_primecam_mpi.py -s \"$SCH_NAME\"") 2>&1 | tee -a toast_270924_arc10.log
-    mpirun -n 32 python sim_data_eorspec_mpi.py -s $SCH_NAME -c 368
+    mpirun -n 32 python sim_data_eorspec_mpi.py -s $SCH_NAME -c $CHANNEL --step $STEP -d $NDETS
     # python sim_data_eorspec_mpi.py -s schedule_COSMOS_2027_06_01.txt -c 333 --step step216 -d 300
 
     # -g GRP_SIZE sets the number of processes per group
@@ -70,6 +62,11 @@ do
 
     # Sleep for 5 sec before next simulation
     sleep 5
+    # # Break loop if N schedules have been run
+    # if (( i - START_IDX + 1 >= 3 )); then
+    #     echo "Exiting Schedules loop."
+    #     break
+    # fi
 done
 
 ### End of script ###
@@ -80,3 +77,4 @@ done
 # Default START_IDX=0 and STOP_IDX=length of the array of schedule files.
 # Run as:
 # /usr/bin/time -v ./run_primecam_schedules.sh 0 1 2>&1 | tee -a logs/toast_270924_arc10.log
+# mpirun -n 32 python sim_data_eorspec_mpi.py -s $SCH_NAME -c $CHANNEL --step $STEP -d $NDETS
