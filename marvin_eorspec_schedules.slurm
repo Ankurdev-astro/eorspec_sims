@@ -3,18 +3,18 @@
 ###############################################
 ###     SLURM script for eorspec_sims      ####
 ### ARRAY JOB runs all schedules in a step ####
-###					                       ####
+###                                        ####
 ###     Tested on Uni Bonn Marvin Cluster  ####
-###             v1.0 , 29.04.2025          ####
+###             v1.1 , 30.04.2025          ####
 ###############################################
 
 ### This script runs through all the schedule files
 ### launching SLURM ARRAY jobs for each schedule independently
-### NOTE: NDETS parameter must be set in Section 4
+### NOTE: Sim CONFIG parameters must be set in Section 4
 
 ### section 1 - SLURM params
 
-#SBATCH --partition=intelsr_short
+#SBATCH --partition=intelsr_short   ###intelsr_short / intelsr_devel
 ### cluster specific / intelsr_short, lm_short, lm_devel
 ### https://wiki.hpc.uni-bonn.de/en/running_jobs
 
@@ -27,35 +27,41 @@
 #SBATCH --array=0-130  # Define the array size
 ### basename -a input_files/step_schedules/step235/*.txt | wc -l
 
-#SBATCH --job-name=f350_step210_sim 
+#SBATCH --job-name=f333_step210_sim 
 ### Job name, f#chnl_step#XYZ_sim
 
 ### #ntasks = #nodes x #ntasks-per-node
 ### #ncores_total = #ntasks x #cpus-per-task
 ### #ncores_total_pernode = #ntasks-per-node x #cpus-per-task
 
-### #SBATCH --mem-per-cpu=10G # mem per proc, baseline 8G
 #SBATCH --mem=200G                # max mem requested, per node
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-00:30:00 #estimated runtime max 0-04:00:00
+#SBATCH --time 0-00:15:00 #estimated runtime max 0-04:00:00
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates
 ### #SBATCH --output ./logs/%j.%x.out   # stdout file (overwrite)
 ### #SBATCH --error ./logs/%j.%x.err     # stdout file (overwrite)
-#SBATCH --output ./logs_sims/%A_%a_%x.out 
-#SBATCH --error ./logs_sims/%A_%a_%x.err 
+####SBATCH --output ./logs_sims/%A_%a_%x.out 
+####SBATCH --error ./logs_sims/%A_%a_%x.err 
+#SBATCH --output=./logs_sims/%A/%A_%a_%x.out
+#SBATCH --error=./logs_sims/%A/%A_%a_%x.err
+
 
 
 ### section 2 - Runtime env set-up
 module purge
 ### load all modules needed for Job
 module load mpi4py
+module load HDF5/1.14.5-gompi-2024a
 ### initiate conda
 ### source /opt/software/easybuild-INTEL/software/Anaconda3/2022.05/etc/profile.d/conda.sh
 source /opt/software/easybuild-INTEL/software/Miniforge3/24.1.2-0/etc/profile.d/conda.sh
 conda deactivate
-conda activate toast3
+conda activate latest-toast
+echo "===== Loaded Modules ====="
+module list 2>&1
+echo "=========================="
 
 ### section 3 - Job Logging
 echo ""
@@ -64,6 +70,8 @@ echo "Running Job..."
 echo "Starting at `date`"
 echo "Hostname $HOSTNAME"
 echo "Job Name: $SLURM_JOB_NAME"
+echo "Array Task ID: $SLURM_ARRAY_TASK_ID"
+echo "Array Job ID: $SLURM_ARRAY_JOB_ID"
 echo "Job ID: $SLURM_JOB_ID"
 echo "Node List: $SLURM_NODELIST"
 echo "Running on $SLURM_NNODES nodes."
@@ -80,15 +88,15 @@ echo "Using mpi4py: $(python -c 'import mpi4py; print(mpi4py.__file__)' 2>/dev/n
 echo "Using MPI lib: $(which mpirun)"
 echo "Using mpicc lib: $(which mpicc)"
 echo "Using GCC lib: $(which gcc)"
-echo ""
+echo "=========================="
 
 ### section 4 - Set Job parameters
 ###################
 ####  CONFIG   ####
 ###################
-CHANNEL=337
-STEP='step216'
-NDETS=300
+CHANNEL=333
+STEP='step210'
+NDETS=200
 ###################
 
 ### section 5 - Job Run
@@ -105,9 +113,13 @@ schedule_file=${schedule_files_list[$SLURM_ARRAY_TASK_ID]}
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 echo ""
+echo "*** CONFIG ***"
 echo "Array Task ID: $SLURM_ARRAY_TASK_ID"
 echo "Running schedule file: $schedule_file"
+echo "FPI Channel: $CHANNEL"
+echo "FPI Step: $STEP"
 echo "Number of dets: $NDETS"
+echo "**************"
 echo ""
 
 ### Simulating timestream data from schedules
