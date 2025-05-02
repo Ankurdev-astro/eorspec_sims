@@ -24,19 +24,19 @@
 #SBATCH --cpus-per-task 4 # number of cores per task ; threads per process
 
 #SBATCH --nodes 1  # number of nodes
-#SBATCH --array=0-130  # Define the array size
+#SBATCH --array=1-130  #0-130  # Define the array size
 ### basename -a input_files/step_schedules/step235/*.txt | wc -l
 
-#SBATCH --job-name=f333_step210_sim 
-### Job name, f#chnl_step#XYZ_sim
+#SBATCH --job-name=f333_step210_sim_atm 
+### Job name, f#chnl_step#XYZ_sim_atm/wn
 
 ### #ntasks = #nodes x #ntasks-per-node
 ### #ncores_total = #ntasks x #cpus-per-task
 ### #ncores_total_pernode = #ntasks-per-node x #cpus-per-task
 
-#SBATCH --mem=200G                # max mem requested, per node
+#SBATCH --mem=300G                # max mem requested, per node
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-00:15:00 #estimated runtime max 0-04:00:00
+#SBATCH --time 0-01:00:00 #estimated runtime max 0-01:00:00
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates

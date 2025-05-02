@@ -55,16 +55,16 @@ def main():
     # 354, 357, 361, 365, 368
 
     # Input Data Dir
-    parent_dir = "ccat_datacenter_mock/new_CII_tomo_dump"
-    channel_id = 350
-    # pattern = re.compile(rf".*_{target_freq}_.*")
-    pattern = re.compile(rf"^deg2-0.*_f{channel_id}$")
+    parent_dir = "ccat_datacenter_mock/data_CII_tomo_ATM"
+    channel_id = 333
+    step = "step210"
+    pattern = re.compile(rf".*_f{channel_id}$")
     
     ## Maps Output Directory
-    maps_outdir = "./ccat_datacenter_mock/outmaps_fb_v4"
-    savemaps_dir = os.path.join(maps_outdir, "dump_v3") 
+    maps_outdir = "./ccat_datacenter_mock/outmaps_fb_v1"
+    savemaps_dir = os.path.join(maps_outdir, f"{channel_id}") 
     
-    mapname_prefix = f"cosmos_f{channel_id}_deg2-0"
+    mapname_prefix = f"cosmos_f{channel_id}_{step}"
     os.makedirs(savemaps_dir, exist_ok=True)    
     if rank == 0:
         notes_file = os.path.join(savemaps_dir, 'notes.txt')

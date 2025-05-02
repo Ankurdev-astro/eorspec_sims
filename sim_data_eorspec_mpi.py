@@ -86,7 +86,7 @@ class Args:
     def __init__(self, parsed_args):
         self.parsed_args = parsed_args
         self.weather = 'atacama'
-        self.sim_atm = False #True Default
+        self.sim_atm = True #True Default
         self.pwv_limit = 1.27 #1.27 #mm
         self.sample_rate = 244 * u.Hz
         self.scan_rate_az = 0.5  * (u.deg / u.s) #on sky rate
@@ -99,7 +99,7 @@ class Args:
     
         self.h5_outdir = os.path.join(
             ".", "ccat_datacenter_mock", 
-            "data_CII_tomo", 
+            "data_CII_tomo_ATM", 
             f"data_COSMOS_f{parsed_args.chnl}"
         )
 
