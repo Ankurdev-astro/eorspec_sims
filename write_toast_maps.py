@@ -12,15 +12,47 @@ from scripts import ccat_operators as ccat_ops
 
 import h5py
 import re
+import argparse
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Write TOAST F&B maps for a given FPI channel and step")
+    parser.add_argument('-c', '--chnl',
+                        type=int,
+                        help="Channel ID of EoR-Spec Channel (e.g. 350)")
+    parser.add_argument('--step',
+                        type=str,
+                        help="EoR-Spec Step. (e.g. step210)")
+    parser.add_argument('-in', '--input_dir',
+                        type=str,
+                        default="data_CII_tomo_ATM",
+                        help="Input parent directory with fXXX obs dirs")
+    parser.add_argument('-out', '--output_dir',
+                        type=str,
+                        default="outmaps_fb_default",
+                        help="Output `directory for maps")
+    parser.add_argument('-g', '--grp_size',
+                        type=int,
+                        default=4,
+                        help="Group size for MPI (optional)")
+    parsed_args = parser.parse_args()
+    
+    
+    channel_id = parsed_args.chnl
+    step = parsed_args.step
+    input_dir = parsed_args.input_dir
+    output_dir = parsed_args.output_dir
+    grp_size = parsed_args.grp_size
+    
+    ccat_data_dir = f"ccat_datacenter_mock"
+
     #=============================#
     ### Setup
     #=============================#
 
     comm, procs, rank = toast.get_world() 
-    toast_comm = toast.Comm(world=comm, groupsize=4)
+    toast_comm = toast.Comm(world=comm, groupsize=grp_size)
     # performance improves with groupsize increasing
     # max we can do is like 8 groupsize
     # set process_rows=None
@@ -49,39 +81,50 @@ def main():
     log_global.info_rank(f"Group rank: {toast_comm.group_rank}", comm)
     
     #--------------------------------------------------#
-    # EoR-Spec Channel IDs
-    # 350 GHz Band
-    # 333, 337, 340, 343, 347, 350,
-    # 354, 357, 361, 365, 368
 
     # Input Data Dir
-    parent_dir = "ccat_datacenter_mock/data_CII_tomo_ATM"
-    channel_id = 333
-    step = "step210"
-    pattern = re.compile(rf".*_f{channel_id}$")
+    parent_dir = os.path.join(ccat_data_dir, input_dir)
     
-    ## Maps Output Directory
-    maps_outdir = "./ccat_datacenter_mock/outmaps_fb_v1"
-    savemaps_dir = os.path.join(maps_outdir, f"{channel_id}") 
-    
+    # Maps Output Directory
+    maps_outdir = os.path.join(ccat_data_dir, output_dir)
+    savemaps_dir = os.path.join(maps_outdir, f"f{channel_id}") 
     mapname_prefix = f"cosmos_f{channel_id}_{step}"
     os.makedirs(savemaps_dir, exist_ok=True)    
+    
+    log_global.info_rank(f"Loading data for: f{channel_id}; {step}", comm)
     if rank == 0:
         notes_file = os.path.join(savemaps_dir, 'notes.txt')
-        # Write to the file inside savemaps_dir (this will overwrite each time)
+        # Write notes
         with open(notes_file, 'w') as f:
             # f.write(f"Poly Detrend; No CM; PCA: 5 leading components removed along axis 1; Turnarounds included \n")
             f.write(f"Testing 2.0 Deg center-width field \n")
 
-    try:
-        match_pattern = next(
-                            (d for d in os.listdir(parent_dir) if pattern.match(d)),
-                        None)
-        data_input_path = os.path.join(parent_dir, match_pattern)
+        # Match the top-level dir like data_COSMOS_fXXX
+        pattern_level1 = re.compile(rf".*_f{channel_id}$")
+        match_level1 = [d for d in os.listdir(parent_dir) if pattern_level1.match(d)]
+        if len(match_level1) == 0:
+            raise RuntimeError(f"No match found for '*_f{channel_id}' in '{parent_dir}'")
+        if len(match_level1) > 1:
+            raise RuntimeError(f"Multiple matches found for '*_f{channel_id}' in '{parent_dir}'")
+
+        subdir_path = os.path.join(parent_dir, match_level1[0])
+
+        # Now match the subdirectory inside that contains the correct step
+        pattern_level2 = re.compile(rf".*f{channel_id}_{step}.*")
+        match_level2 = [d for d in os.listdir(subdir_path) if pattern_level2.match(d)]
+        if len(match_level2) == 0:
+            raise RuntimeError(f"No match found for 'f{channel_id}_{step}' in '{subdir_path}'")
+        if len(match_level2) > 1:
+            raise RuntimeError(f"Multiple matches found for 'f{channel_id}_{step}' in '{subdir_path}'")
+
+        data_input_path = os.path.join(subdir_path, match_level2[0])
         log_global.info_rank(f"Matched Path: {data_input_path}", comm)
-    except:
-        raise RuntimeError(f"No match found for '*_f{channel_id}_*' in '{parent_dir}'")
-    #--------------------------------------------------#    
+    
+    else:
+        data_input_path = None
+        
+    comm.barrier()
+    data_input_path = comm.bcast(data_input_path, root=0)
     
     #=============================#
     ### Data Loading
@@ -124,7 +167,7 @@ def main():
         detdata=detdata_list,                       
         intervals=intervals_list,  
         sort_by_size=False,                       # Sort observations by size
-        process_rows=4,                        # Default "None" detector-major layout process_rows=1  #4
+        process_rows=grp_size,                        # Default "None" detector-major layout
         #process_rows=1 Ensures all detectors are available on all ranks
         force_serial=False                        # Use parallel I/O if available
     )
@@ -136,7 +179,7 @@ def main():
     for i,obs in enumerate(data.obs):
         log_global.info_rank(f"Shape of Signal in Obs{i}: {np.asarray(obs.detdata['signal']).shape}", comm) 
     #-------------------------------------#
-    exit(1)
+    # exit(1)
     #=============================#
     ### Filtering
     #=============================#
@@ -184,8 +227,6 @@ def main():
     #=============================#
     ### Binning
     #=============================#
-    #CAR
-    # 0.6 arcmin pixes
     res = (37/3 * u.arcsec).to(u.deg)     # Resolution per Pix: 1/3rd of Beam FWHM
     mode = "I"
 
@@ -197,7 +238,6 @@ def main():
                                     projection="CAR",
                                     resolution=(res, res),
                                     center=(150.0*u.degree, 2.0*u.degree),
-                                    # bounds=(153*u.degree,147*u.degree,-2*u.degree,6*u.degree),
                                     dimensions = (np.int32(8*u.deg/res), np.int32(8*u.deg/res)),
                                     auto_bounds=False,
                                     )
