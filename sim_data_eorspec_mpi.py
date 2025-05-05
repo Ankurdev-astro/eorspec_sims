@@ -39,6 +39,7 @@
 # One schedule simulates FPI_step_i for all times in a day in which i_th step observes 
 # Schedule now scans FPI_step_i and then jumps in time to next FPI_step_i
 #18-04-2025: Fix Atm realization based on realization_uid (unique per day)
+#05-05-2025: Fixed pwv to Median weather = True
 ###
 
 """
@@ -191,7 +192,7 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
     sim_ground.scan_rate_az =  args.scan_rate_az
     sim_ground.scan_accel_az = args.scan_accel_az
     sim_ground.max_pwv = 1.41 * u.mm #Truncate PWV
-    sim_ground.median_weather = False
+    sim_ground.median_weather = True #False, changed on 05.05.2025
     
     #=============================#
     ### El Nod Tests ###

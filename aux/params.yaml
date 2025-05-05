@@ -11,11 +11,11 @@
 - --patch-coord
 - C
 - --start
-- '2031-06-30 00:00:00'
+- '2027-10-30 00:00:00'
 - --stop
-- '2031-06-30 23:59:59'
+- '2027-10-30 23:59:59'
 - --patch
-- COSMOS_2031_06_30,1,150,2,2.0
+- COSMOS_2027_10_30,1,150,2,2.0
 - --el-min-deg
 - '40'
 - --el-max-deg
@@ -32,4 +32,4 @@
 - '0.0'
 - --no-partial-scans
 - --out
-- ./gen_schedules/schedule_COSMOS_2031_06_30.txt
+- ./gen_schedules/schedule_COSMOS_2027_10_30.txt
