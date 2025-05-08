@@ -24,10 +24,15 @@
 #SBATCH --cpus-per-task 4 # number of cores per task ; threads per process
 
 #SBATCH --nodes 1  # number of nodes
-#SBATCH --array=1-130  #0-130  # Define the array size
+#SBATCH --array=0-137  #0-137  # Define the array size
+### step210: 0-136
+### step216: 0-137
+### step222: 0-137
+### step228: 0-138
+### step235: 0-138
 ### basename -a input_files/step_schedules/step235/*.txt | wc -l
 
-#SBATCH --job-name=f333_step210_sim_atm 
+#SBATCH --job-name=f350_step222_sim_atm 
 ### Job name, f#chnl_step#XYZ_sim_atm/wn
 
 ### #ntasks = #nodes x #ntasks-per-node
@@ -36,7 +41,7 @@
 
 #SBATCH --mem=300G                # max mem requested, per node
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-01:00:00 #estimated runtime max 0-01:00:00
+#SBATCH --time 0-02:00:00 #estimated runtime max 0-02:00:00
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates
@@ -89,14 +94,15 @@ echo "Using MPI lib: $(which mpirun)"
 echo "Using mpicc lib: $(which mpicc)"
 echo "Using GCC lib: $(which gcc)"
 echo "=========================="
+echo ""
 
 ### section 4 - Set Job parameters
 ###################
 ####  CONFIG   ####
 ###################
-CHANNEL=333
-STEP='step210'
-NDETS=200
+CHANNEL=350
+STEP='step222'
+NDETS=210
 ###################
 
 ### section 5 - Job Run
