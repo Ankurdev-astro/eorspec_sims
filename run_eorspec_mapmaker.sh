@@ -9,8 +9,13 @@ echo "$(python --version)"
 ###################
 CHANNEL=340
 STEP='step216'
+# INDIR='data_CII_tomo_ATM'
+# OUTDIR='outmaps_fb_ATM'
+
+### for arc10 tests
 INDIR='data_CII_tomo'
 OUTDIR='outmaps_fb_v5'
+NOTES=''
 ###################
 
-mpirun -np 48 python write_toast_maps.py -c $CHANNEL --step $STEP -in $INDIR -out $OUTDIR
+mpirun -np 48 python write_toast_maps.py -c $CHANNEL --step $STEP -in $INDIR -out $OUTDIR -n "$NOTES"

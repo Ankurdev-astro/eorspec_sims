@@ -36,6 +36,10 @@ def main():
                         type=int,
                         default=4,
                         help="Group size for MPI (optional)")
+    parser.add_argument('-n', '--note_msg',
+                        type=str,
+                        default=None,
+                        help="Optional message to include in the output dir")
     parsed_args = parser.parse_args()
     
     
@@ -44,6 +48,7 @@ def main():
     input_dir = parsed_args.input_dir
     output_dir = parsed_args.output_dir
     grp_size = parsed_args.grp_size
+    note_msg = parsed_args.note_msg
     
     ccat_data_dir = f"ccat_datacenter_mock"
 
@@ -92,12 +97,21 @@ def main():
     os.makedirs(savemaps_dir, exist_ok=True)    
     
     log_global.info_rank(f"Loading data for: f{channel_id}; {step}", comm)
-    if rank == 0:
+    
+    if rank == 0 and (len(note_msg.strip()) > 0):
+        # Write notes
         notes_file = os.path.join(savemaps_dir, 'notes.txt')
         # Write notes
         with open(notes_file, 'w') as f:
             # f.write(f"Poly Detrend; No CM; PCA: 5 leading components removed along axis 1; Turnarounds included \n")
-            f.write(f"Testing 2.0 Deg center-width field \n")
+            f.write(f"{note_msg} \n")
+    if rank == 0:
+        # # Write notes
+        # notes_file = os.path.join(savemaps_dir, 'notes.txt')
+        # # Write notes
+        # with open(notes_file, 'w') as f:
+        #     # f.write(f"Poly Detrend; No CM; PCA: 5 leading components removed along axis 1; Turnarounds included \n")
+        #     f.write(f"{note_msg} \n")
 
         # Match the top-level dir like data_COSMOS_fXXX
         pattern_level1 = re.compile(rf".*_f{channel_id}$")
@@ -180,6 +194,7 @@ def main():
         log_global.info_rank(f"Shape of Signal in Obs{i}: {np.asarray(obs.detdata['signal']).shape}", comm) 
     #-------------------------------------#
     # exit(1)
+    
     #=============================#
     ### Filtering
     #=============================#
@@ -194,14 +209,14 @@ def main():
     
     ### Data Level 1: Deslope
     poly_detrend = ccat_ops.PolyDetrend(name="poly_detrend")
-    poly_detrend.enabled = False  # Toggle to False to disable
+    poly_detrend.enabled = True  # Toggle to False to disable
     poly_detrend.apply(data)
     log_global.info_rank(f"Poly Detrend done in", comm, timer = timer)
     
     ### Data Level 2: Az-El Template Correction
     log_global.info_rank(f"Az-El Template Correction...", comm)
     template_azel = ccat_ops.Template_azel(name="template_azel")
-    template_azel.enabled = False  # Toggle to False to disable
+    template_azel.enabled = True  # Toggle to False to disable
     template_azel.apply(data)
     log_global.info_rank(f"Az-El Template done in", comm, timer = timer)    
     # exit(1)
@@ -209,7 +224,7 @@ def main():
     ### Data Level 3: Common Mode Removal
     log_global.info_rank(f"Common Mode Removal...", comm)
     commonmode_filter = toast.ops.CommonModeFilter()
-    commonmode_filter.enabled = False  # Toggle to False to disable
+    commonmode_filter.enabled = True  # Toggle to False to disable
     commonmode_filter.apply(data)
     log_global.info_rank(f"Common Mode done in", comm, timer = timer)   
     # exit(1)
@@ -218,7 +233,7 @@ def main():
     log_global.info_rank(f"PCA Component Removal...", comm)
     pca_clean = ccat_ops.PCAComp_removal(name="pca_clean")
     pca_clean.n_components = 5 #4
-    pca_clean.enabled = False  # Toggle to False to disable
+    pca_clean.enabled = True  # Toggle to False to disable
     pca_clean.apply(data)
     log_global.info_rank(f"PCA done in", comm, timer = timer)
     
