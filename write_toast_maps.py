@@ -98,21 +98,7 @@ def main():
     
     log_global.info_rank(f"Loading data for: f{channel_id}; {step}", comm)
     
-    if rank == 0 and (len(note_msg.strip()) > 0):
-        # Write notes
-        notes_file = os.path.join(savemaps_dir, 'notes.txt')
-        # Write notes
-        with open(notes_file, 'w') as f:
-            # f.write(f"Poly Detrend; No CM; PCA: 5 leading components removed along axis 1; Turnarounds included \n")
-            f.write(f"{note_msg} \n")
     if rank == 0:
-        # # Write notes
-        # notes_file = os.path.join(savemaps_dir, 'notes.txt')
-        # # Write notes
-        # with open(notes_file, 'w') as f:
-        #     # f.write(f"Poly Detrend; No CM; PCA: 5 leading components removed along axis 1; Turnarounds included \n")
-        #     f.write(f"{note_msg} \n")
-
         # Match the top-level dir like data_COSMOS_fXXX
         pattern_level1 = re.compile(rf".*_f{channel_id}$")
         match_level1 = [d for d in os.listdir(parent_dir) if pattern_level1.match(d)]
@@ -133,6 +119,13 @@ def main():
 
         data_input_path = os.path.join(subdir_path, match_level2[0])
         log_global.info_rank(f"Matched Path: {data_input_path}", comm)
+    
+    if rank == 0 and (len(note_msg.strip()) > 0):
+        # Write notes
+        notes_file = os.path.join(savemaps_dir, f'notes_f{channel_id}_{step}.txt')
+        with open(notes_file, 'w') as f:
+            # f.write(f"Poly Detrend; No CM; PCA: 5 leading components removed along axis 1; Turnarounds included \n")
+            f.write(f"{note_msg} \n")
     
     else:
         data_input_path = None
@@ -174,7 +167,7 @@ def main():
     # Instantiate the LoadHDF5 operator
     loader = toast.ops.LoadHDF5(
         volume=data_input_path,  # Directory with observation files
-        pattern="obs_.*_.*\.h5",                           # Match files like '"obs_.*_.*\.h5"'
+        pattern=r"obs_.*_.*\.h5",                  # Match files like '"obs_.*_.*\.h5"'
         # files=[],                               # Use volume + pattern to find files
         meta=meta_list,     
         shared=shared_list, 
@@ -190,8 +183,8 @@ def main():
     loader.apply(data)
     
     log_global.info_rank(f"Number of Observations Loaded: {len(data.obs)} in", comm, timer = timer_global)
-    for i,obs in enumerate(data.obs):
-        log_global.info_rank(f"Shape of Signal in Obs{i}: {np.asarray(obs.detdata['signal']).shape}", comm) 
+    # for i,obs in enumerate(data.obs):
+    #     log_global.info_rank(f"Shape of Signal in Obs{i}: {np.asarray(obs.detdata['signal']).shape}", comm) 
     #-------------------------------------#
     # exit(1)
     

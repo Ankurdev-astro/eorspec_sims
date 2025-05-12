@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SBATCH_SCRIPT="marvin_eorspec_schedules.slurm"
-###SBATCH_SCRIPT="marvin_mlmap.slurm"
+### SBATCH_SCRIPT="marvin_eorspec_schedules.slurm"
+SBATCH_SCRIPT="marvin_eorspec_mapmaker.slurm"
 
 # Submit the Slurm job and capture the job ID
 JOB_SUBMIT_OUTPUT=$(sbatch "$SBATCH_SCRIPT")

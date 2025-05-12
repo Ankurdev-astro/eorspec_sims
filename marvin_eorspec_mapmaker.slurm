@@ -1,14 +1,14 @@
 #!/bin/bash
 
 ###############################################
-###       SLURM script for ML Mapmaking    ####
+###      SLURM script for F&B Mapmaking    ####
 ###                                        ####
 ###     Tested on Uni Bonn Marvin Cluster  ####
-###             v1.0 , 18.10.2024          ####
+###             v1.1 , 12.05.2025          ####
 ###############################################
 
 ### This script run the F&B-pipeline for a EoRSpec
-### NOTE: PARENT_DIR parameter must be set in Section 4
+### NOTE: CONFIG parameters must be set in Section 4
 
 ### section 1 - SLURM params
 
@@ -17,12 +17,12 @@
 ### https://wiki.hpc.uni-bonn.de/en/running_jobs
 
 #SBATCH --ntasks-per-node 48 # tasks per node ; num of processes per node
-#SBATCH --cpus-per-task 2 # number of cores per task ; threads per process
+#SBATCH --cpus-per-task 1 # number of cores per task ; threads per process
 
 #SBATCH --nodes 1  # number of nodes
 
-#SBATCH --job-name=det1000_n16c6nd2_fb # Job name, #ntaskstotal#corespertask#n_nodes
-#f350_step222_fb_atm 
+#SBATCH --job-name=f347_step216_fb_atm 
+### Job name, f#chnl_step#XYZ_fb_atm/wn
 
 ### #ntasks = #nodes x #ntasks-per-node
 ### #ncores_total = #ntasks x #cpus-per-task
@@ -30,7 +30,7 @@
 
 #SBATCH --mem=500G           # max mem requested, per node, baseline 400G
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-01:00:00 #estimated runtime max, baseline 0-15:00:00 
+#SBATCH --time 0-00:45:00    #estimated runtime max, baseline 0-00:30:00 
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates
@@ -81,11 +81,11 @@ echo ""
 ### section 4 - Set Job parameters
 ####  CONFIG   ####
 ###################
-CHANNEL=340
+CHANNEL=347
 STEP='step216'
 INDIR='data_CII_tomo_ATM'
 OUTDIR='outmaps_fb_ATM'
-NOTES=''
+NOTES='Steps: Poly Detrend, AZ Template corr, CM removal, PCA 5 components'
 ###################
 
 
@@ -94,6 +94,7 @@ echo "***** EXEC SCRIPT *****"
 echo `date '+%F %H:%M:%S'`
 echo "***********************"
 echo ""
+set -e
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 

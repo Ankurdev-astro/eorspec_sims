@@ -110,6 +110,7 @@ echo "***** EXEC SCRIPT *****"
 echo `date '+%F %H:%M:%S'`
 echo "***********************"
 echo ""
+set -e 
 
 ### Collect all schedule files from input dir
 SCHEDULE_DIR="input_files/step_schedules"
