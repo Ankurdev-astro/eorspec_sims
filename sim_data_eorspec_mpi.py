@@ -100,11 +100,12 @@ class Args:
     
         self.h5_outdir = os.path.join(
             ".", "ccat_datacenter_mock", 
-            "data_CII_tomo_ATM", 
+            "data_CII_tomo_WN", 
             f"data_COSMOS_f{parsed_args.chnl}"
         )
 
         # CAR set-up for WCS Pixel Operator
+        self.scan_inmap = True # Toggle to Scan Input Sky Map; Default True
         self.mode = "I"
         self.input_map =  f"CII_CAR_TNGval350_f{parsed_args.chnl}.fits"
         self.map_center = (150.0 *u.degree, 2.0 *u.degree)               #from CRVAL
@@ -249,7 +250,7 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
     pixels_healpix_radec.enabled = False
 
     scan_wcs_map = toast.ops.ScanWCSMap(name="scan_wcs_map")
-    scan_wcs_map.enabled = True
+    scan_wcs_map.enabled = args.scan_inmap
 
     scan_healpix_map = toast.ops.ScanHealpixMap(name="scan_healpix_map")
     scan_healpix_map.enabled = False
@@ -433,8 +434,8 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
         scan_wcs_map.save_pointing = False
         scan_wcs_map.apply(data)
 
-    mem = toast.utils.memreport(msg="(whole node)", comm=world_comm, silent=True)
-    log.info_rank(f"After Scanning Input Map:  {mem}", world_comm)
+    # mem = toast.utils.memreport(msg="(whole node)", comm=world_comm, silent=True)
+    # log.info_rank(f"After Scanning Input Map:  {mem}", world_comm)
 
     #=============================#
     # Simulate detector noise

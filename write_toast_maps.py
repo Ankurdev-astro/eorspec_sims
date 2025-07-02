@@ -212,20 +212,26 @@ def main():
     template_azel.enabled = True  # Toggle to False to disable
     template_azel.apply(data)
     log_global.info_rank(f"Az-El Template done in", comm, timer = timer)    
-    # exit(1)
 
     ### Data Level 3: Common Mode Removal
     log_global.info_rank(f"Common Mode Removal...", comm)
     commonmode_filter = toast.ops.CommonModeFilter()
-    commonmode_filter.enabled = True  # Toggle to False to disable
+    commonmode_filter.enabled = False  # Toggle to False to disable
     commonmode_filter.apply(data)
-    log_global.info_rank(f"Common Mode done in", comm, timer = timer)   
-    # exit(1)
+    log_global.info_rank(f"Common Mode done in", comm, timer = timer) 
+    
+    ### Data Level 3a: Regress out 2D polynomials
+    log_global.info_rank(f"Regress out 2D polynomials...", comm)
+    poly2d_filter = toast.ops.PolyFilter2D()
+    poly2d_filter.order = 2 #3
+    poly2d_filter.enabled = False  # Toggle to False to disable
+    poly2d_filter.apply(data)
+    log_global.info_rank(f"2D polynomial filtering done in", comm, timer = timer)   
 
     ### Data Level 4: PCA Component Removal
     log_global.info_rank(f"PCA Component Removal...", comm)
     pca_clean = ccat_ops.PCAComp_removal(name="pca_clean")
-    pca_clean.n_components = 5 #4
+    pca_clean.n_components = 4 #3
     pca_clean.enabled = True  # Toggle to False to disable
     pca_clean.apply(data)
     log_global.info_rank(f"PCA done in", comm, timer = timer)

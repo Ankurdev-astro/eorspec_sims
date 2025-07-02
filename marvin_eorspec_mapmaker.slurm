@@ -21,16 +21,16 @@
 
 #SBATCH --nodes 1  # number of nodes
 
-#SBATCH --job-name=f347_step216_fb_atm 
-### Job name, f#chnl_step#XYZ_fb_atm/wn
+#SBATCH --job-name=f357_step235_fb_nosigv6
+### Job name, f#chnl_step#XYZ_fb(testv)_atm/wn
 
 ### #ntasks = #nodes x #ntasks-per-node
 ### #ncores_total = #ntasks x #cpus-per-task
 ### #ncores_total_pernode = #ntasks-per-node x #cpus-per-task
 
-#SBATCH --mem=500G           # max mem requested, per node, baseline 400G
+#SBATCH --mem=550G           # max mem requested, per node, baseline 550G
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-00:45:00    #estimated runtime max, baseline 0-00:30:00 
+#SBATCH --time 0-01:00:00    #estimated runtime max, baseline 0-01:00:00 
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates
@@ -81,11 +81,11 @@ echo ""
 ### section 4 - Set Job parameters
 ####  CONFIG   ####
 ###################
-CHANNEL=347
-STEP='step216'
-INDIR='data_CII_tomo_ATM'
-OUTDIR='outmaps_fb_ATM'
-NOTES='Steps: Poly Detrend, AZ Template corr, CM removal, PCA 5 components'
+CHANNEL=357
+STEP='step235'
+INDIR='data_CII_tomo_NOSIG'
+OUTDIR='outmaps_fb_NOSIGv6'
+NOTES='Steps: Poly Detrend, AZ Template corr, No CM removal, PCA 4 components'
 ###################
 
 

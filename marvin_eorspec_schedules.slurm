@@ -23,8 +23,8 @@
 #SBATCH --ntasks-per-node 12 # tasks per node ; num of processes per node
 #SBATCH --cpus-per-task 4 # number of cores per task ; threads per process
 
-#SBATCH --nodes 1  # number of nodes
-#SBATCH --array=0-137  #0-137  # Define the array size
+#SBATCH --nodes 1     # number of nodes
+#SBATCH --array=0-138 # Define the array size
 ### step210: 0-136
 ### step216: 0-137
 ### step222: 0-137
@@ -32,7 +32,7 @@
 ### step235: 0-138
 ### basename -a input_files/step_schedules/step235/*.txt | wc -l
 
-#SBATCH --job-name=f350_step222_sim_atm 
+#SBATCH --job-name=f357_step235_sim_nosig
 ### Job name, f#chnl_step#XYZ_sim_atm/wn
 
 ### #ntasks = #nodes x #ntasks-per-node
@@ -41,7 +41,7 @@
 
 #SBATCH --mem=300G                # max mem requested, per node
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-02:00:00 #estimated runtime max 0-02:00:00
+#SBATCH --time 0-00:30:00 #estimated runtime max 0-02:00:00
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates
@@ -100,9 +100,9 @@ echo ""
 ###################
 ####  CONFIG   ####
 ###################
-CHANNEL=350
-STEP='step222'
-NDETS=210
+CHANNEL=357
+STEP='step235'
+NDETS=250
 ###################
 
 ### section 5 - Job Run
