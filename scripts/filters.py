@@ -127,9 +127,22 @@ def pca_component_removal(data, pca_axis=1, standardization=False, n_components=
     # Explained variance ratio
     explained_variance = pca.explained_variance_ratio_
     if n_components is None:
+        max_comp = 5
         # Remove components explaining more than 0.1% of the variance
         percent_var = [float(x) * 100 for x in explained_variance]
-        n_components = sum(v >= 0.1 for v in percent_var)
+        n_components = min(
+                            sum(v >= 0.1 for v in percent_var),
+                            max_comp
+                            )
+    
+    # if n_components is None:
+    #     # Default to removing components explaining 93% of the variance
+    #     max_comp = 10
+    #     n_components = min(
+    #                         np.searchsorted(
+    #                             np.cumsum(pca.explained_variance_ratio_), 0.95) + 1,
+    #                         max_comp
+    #                         )
 
     # Zero out the leading components
     components_to_remove = np.zeros_like(data_pca)

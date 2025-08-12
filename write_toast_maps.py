@@ -167,6 +167,7 @@ def main():
     # Instantiate the LoadHDF5 operator
     loader = toast.ops.LoadHDF5(
         volume=data_input_path,  # Directory with observation files
+        # pattern=r"obs_COSMOS_2031_.*_.*\.h5",
         pattern=r"obs_.*_.*\.h5",                  # Match files like '"obs_.*_.*\.h5"'
         # files=[],                               # Use volume + pattern to find files
         meta=meta_list,     
@@ -216,7 +217,11 @@ def main():
     ### Data Level 3: Common Mode Removal
     log_global.info_rank(f"Common Mode Removal...", comm)
     commonmode_filter = toast.ops.CommonModeFilter()
-    commonmode_filter.enabled = False  # Toggle to False to disable
+    commonmode_filter.enabled = True  # Toggle to False to disable
+    #Test#
+    commonmode_filter.redistribute = False
+    commonmode_filter.regress = True
+    #-------#
     commonmode_filter.apply(data)
     log_global.info_rank(f"Common Mode done in", comm, timer = timer) 
     
@@ -228,15 +233,25 @@ def main():
     poly2d_filter.apply(data)
     log_global.info_rank(f"2D polynomial filtering done in", comm, timer = timer)   
 
-    ### Data Level 4: PCA Component Removal
-    log_global.info_rank(f"PCA Component Removal...", comm)
-    pca_clean = ccat_ops.PCAComp_removal(name="pca_clean")
-    pca_clean.n_components = 4 #3
+    # ### Data Level 4: PCA Component Removal
+    # log_global.info_rank(f"PCA Component Removal...", comm)
+    # pca_clean = ccat_ops.PCAComp_removal(name="pca_clean")
+    # pca_clean.n_components = 4 #3
+    # pca_clean.enabled = False  # Toggle to False to disable
+    # pca_clean.apply(data)
+    # log_global.info_rank(f"PCA done in", comm, timer = timer)
+    
+    ### Data Level 4a: PCA Component Removal 2
+    log_global.info_rank(f"PCA Component Removal 2...", comm)
+    pca_clean = ccat_ops.PCAComp_removal2(name="pca_clean")
+    pca_clean.n_components = None #4 #3
+    pca_clean.redistribute = False
     pca_clean.enabled = True  # Toggle to False to disable
     pca_clean.apply(data)
     log_global.info_rank(f"PCA done in", comm, timer = timer)
     
     log_global.info_rank(f"Filtering done in", comm, timer = timer_global)  
+    # exit(1)
     
     #=============================#
     ### Binning

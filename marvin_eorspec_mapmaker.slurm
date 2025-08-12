@@ -16,12 +16,12 @@
 ### cluster specific / intelsr_short, lm_short, lm_devel
 ### https://wiki.hpc.uni-bonn.de/en/running_jobs
 
-#SBATCH --ntasks-per-node 48 # tasks per node ; num of processes per node
+#SBATCH --ntasks-per-node 48 #48 # tasks per node ; num of processes per node
 #SBATCH --cpus-per-task 1 # number of cores per task ; threads per process
 
 #SBATCH --nodes 1  # number of nodes
 
-#SBATCH --job-name=f357_step235_fb_nosigv6
+#SBATCH --job-name=f333_step210_fb_dumpv3
 ### Job name, f#chnl_step#XYZ_fb(testv)_atm/wn
 
 ### #ntasks = #nodes x #ntasks-per-node
@@ -30,7 +30,7 @@
 
 #SBATCH --mem=550G           # max mem requested, per node, baseline 550G
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-01:00:00    #estimated runtime max, baseline 0-01:00:00 
+#SBATCH --time 0-01:30:00    #estimated runtime max, baseline 0-01:00:00 
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates
@@ -48,6 +48,7 @@ module load HDF5/1.14.5-gompi-2024a
 source /opt/software/easybuild-INTEL/software/Miniforge3/24.1.2-0/etc/profile.d/conda.sh
 conda deactivate
 conda activate latest-toast
+### conda activate toast3
 echo "===== Loaded Modules ====="
 module list 2>&1
 echo "=========================="
@@ -72,6 +73,7 @@ echo "Current working directory is `pwd`"
 echo "Python path: $(which python)"
 echo "Python version: $(python --version)"
 echo "Using mpi4py: $(python -c 'import mpi4py; print(mpi4py.__file__)' 2>/dev/null || echo '!! mpi4py not found !!')"
+echo "TOAST version: $(python -c 'import toast; print(toast.__version__)' 2>/dev/null || echo '!! toast not found !!')"
 echo "Using MPI lib: $(which mpirun)"
 echo "Using mpicc lib: $(which mpicc)"
 echo "Using GCC lib: $(which gcc)"
@@ -81,11 +83,21 @@ echo ""
 ### section 4 - Set Job parameters
 ####  CONFIG   ####
 ###################
-CHANNEL=357
-STEP='step235'
-INDIR='data_CII_tomo_NOSIG'
-OUTDIR='outmaps_fb_NOSIGv6'
-NOTES='Steps: Poly Detrend, AZ Template corr, No CM removal, PCA 4 components'
+CHANNEL=333
+STEP='step210'
+INDIR='data_CII_tomo_ATM'
+OUTDIR='outmaps_fb_DUMPv3'
+GRP_SIZE=2 #4
+NOTES='Steps: Poly Detrend, AZ Template corr, CM removal with regress, PCAv2 upto 0.1% var removed - redist. False, 2 groups'
+
+echo "***** CONFIG *****"
+echo "CHANNEL: $CHANNEL"
+echo "STEP: $STEP"
+echo "INDIR: $INDIR"
+echo "OUTDIR: $OUTDIR"
+echo "GRP_SIZE: $GRP_SIZE"
+echo "NOTES: $NOTES"
+echo ""
 ###################
 
 
@@ -99,7 +111,7 @@ set -e
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 ### Filter and bin
-mpirun -np 48 python write_toast_maps.py -c $CHANNEL --step $STEP -in $INDIR -out $OUTDIR -n "$NOTES"
+mpirun -np $SLURM_NTASKS python write_toast_maps.py -c $CHANNEL --step $STEP -in $INDIR -out $OUTDIR -g $GRP_SIZE -n "$NOTES"
 
 echo ""
 echo "******** DONE *********"
