@@ -3,5 +3,5 @@ atm_cache/*
 scripts/__pycache__/
 ccat_datacenter_mock/*
 logs*
-input_files/fp_files/fchl_h5_old/*
-input_files/fp_files/fchl_h5_oldv2/*
+input_files/fp_files/fchl_h5_old*
+
