@@ -8,9 +8,9 @@ echo "$(python --version)"
 ###################
 ####  CONFIG   ####
 ###################
-CHANNEL=337
-STEP='step216'
-NDETS=300
+CHANNEL=333
+STEP='step210'
+NDETS=50
 ###################
 
 # Directory containing the schedule files
@@ -53,7 +53,6 @@ do
     # Run the MPI command with the current schedule file
     # (nice -n 10 bash -c "echo -e '\n****************\n' ; /usr/bin/time -v mpirun -np 16 python sim_data_primecam_mpi.py -s \"$SCH_NAME\"") 2>&1 | tee -a toast_270924_arc10.log
     mpirun -n 32 python sim_data_eorspec_mpi.py -s $SCH_NAME -c $CHANNEL --step $STEP -d $NDETS
-    # python sim_data_eorspec_mpi.py -s schedule_COSMOS_2027_06_01.txt -c 333 --step step216 -d 300
 
     # -g GRP_SIZE sets the number of processes per group
     # N_GRP = N_TASKS / GRP_SIZE
@@ -75,6 +74,6 @@ done
 # ./run_primecam_schedules.sh 2 5
 # This will run the schedule files at indices 2, 3, and 4 in the array of schedule files.
 # Default START_IDX=0 and STOP_IDX=length of the array of schedule files.
+#
 # Run as:
 # /usr/bin/time -v ./run_primecam_schedules.sh 0 1 2>&1 | tee -a logs/toast_270924_arc10.log
-# mpirun -n 32 python sim_data_eorspec_mpi.py -s $SCH_NAME -c $CHANNEL --step $STEP -d $NDETS

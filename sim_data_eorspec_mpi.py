@@ -40,6 +40,7 @@
 # Schedule now scans FPI_step_i and then jumps in time to next FPI_step_i
 #18-04-2025: Fix Atm realization based on realization_uid (unique per day)
 #05-05-2025: Fixed pwv to Median weather = True
+#19-08-2025: Updated all dets to correct for NET values
 ###
 
 """
@@ -100,7 +101,7 @@ class Args:
     
         self.h5_outdir = os.path.join(
             ".", "ccat_datacenter_mock", 
-            "data_CII_tomo_WN", 
+            "data_CII_tomo_ATMv2", 
             f"data_COSMOS_f{parsed_args.chnl}"
         )
 
@@ -365,7 +366,7 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
                     zstep=50 * u.m,
                     zmax=2000 * u.m,
                     nelem_sim_max=30000,
-                    gain=1e-5, #changed 04.02.2025 # 2e-5
+                    gain=1e-4, #1e-5, #changed 04.02.2025 # 2e-5
                     wind_dist=10000 * u.m,
                     enabled=False,
                     cache_dir=cache_dir,
@@ -392,7 +393,7 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
             ystep=4 * u.m,
             zstep=4 * u.m,
             zmax=200 * u.m, #changed 31.01.2025
-            gain=1e-5, #Changed 04.02.2025 4e-5
+            gain=4e-5, #1e-5, #Changed 04.02.2025 4e-5
             wind_dist=1000 * u.m,
             enabled=False,
             cache_dir=cache_dir,
@@ -594,7 +595,7 @@ def main():
     schedule_file = os.path.join(sch_dir,parsed_args.sch)
     schedule = toast.schedule.GroundSchedule()
     schedule.read(schedule_file, comm=comm)
-    
+
     # Run the simulation pipeline
     eorspec_mockdata_pipeline(args, comm, focalplane, schedule, parsed_args.grp_size)
     log_global.info_rank(f"Wrote timestream data for {schedule_file} to disk", comm=comm)
