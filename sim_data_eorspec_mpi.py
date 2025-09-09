@@ -108,7 +108,7 @@ class Args:
         # CAR set-up for WCS Pixel Operator
         self.scan_inmap = True # Toggle to Scan Input Sky Map; Default True
         self.mode = "I"
-        self.input_map =  f"CII_CAR_TNGval350_f{parsed_args.chnl}.fits"
+        self.input_map =  f"CO_CII_CAR350_f{parsed_args.chnl}.fits"
         self.map_center = (150.0 *u.degree, 2.0 *u.degree)               #from CRVAL
         map_side_deg = 4 * u.degree
         self.map_shape = (1107, 1107)                                      #from NAXIS        
