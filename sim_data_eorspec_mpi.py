@@ -41,6 +41,9 @@
 #18-04-2025: Fix Atm realization based on realization_uid (unique per day)
 #05-05-2025: Fixed pwv to Median weather = True
 #19-08-2025: Updated all dets to correct for NET values
+#10-09-2025: Updated atmosphere gains to be closer to SO simulations
+#10-09-2025: Included freq in obs metadata
+#10-09-2025: Updated convert_units.py to include convert_K_jysr
 ###
 
 """
@@ -66,6 +69,7 @@ from toast.mpi import MPI
 from toast.utils import name_UID
 
 from scripts.helper_scripts.calc_groupsize import job_group_size, estimate_group_size
+from scripts.helper_scripts.convert_units import get_freq
 
 import astropy.units as u
 from astropy.table import QTable
@@ -87,6 +91,7 @@ warnings.simplefilter('ignore', ErfaWarning)
 class Args:
     def __init__(self, parsed_args):
         self.parsed_args = parsed_args
+        self.sim_noise = True #True Default, Toggle to False to disable instrument noise
         self.weather = 'atacama'
         self.sim_atm = True #True Default
         self.pwv_limit = 1.27 #1.27 #mm
@@ -101,7 +106,7 @@ class Args:
     
         self.h5_outdir = os.path.join(
             ".", "ccat_datacenter_mock", 
-            "data_CII_tomo_ATMv2", 
+            "data_CII_tomo_ATM", 
             f"data_COSMOS_f{parsed_args.chnl}"
         )
 
@@ -217,11 +222,13 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
         obs['realization_uid'] = name_UID(obs['realization_name'])
         obs['FPI_channel'] = f'f{args.parsed_args.chnl}'
         obs['FPI_step'] = args.parsed_args.step
+        obs['freq'] = get_freq(f"f{int(args.parsed_args.chnl)}")
 
     log.info_rank(f"Realization name: {data.obs[0]['realization_name']}", world_comm)
     log.info_rank(f"Realization UID: {data.obs[0]['realization_uid']}", world_comm)
     log.info_rank(f"FPI channel: {data.obs[0]['FPI_channel']}", world_comm)
     log.info_rank(f"FPI step: {data.obs[0]['FPI_step']}", world_comm)
+    log.info_rank(f"Frequency: {data.obs[0]['freq']}", world_comm)
     
     #=============================#
     # Detector Pointing
@@ -442,6 +449,7 @@ def eorspec_mockdata_pipeline(args, comm, focalplane, schedule, group_size):
     # Simulate detector noise
     sim_noise = toast.ops.SimNoise(name="sim_noise")
     sim_noise.noise_model = elevation_model.out_model
+    sim_noise.enabled = args.sim_noise
     sim_noise.apply(data)
 
     #=============================#

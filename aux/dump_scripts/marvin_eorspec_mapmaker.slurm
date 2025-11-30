@@ -16,13 +16,13 @@
 ### cluster specific / intelsr_short, lm_short, lm_devel
 ### https://wiki.hpc.uni-bonn.de/en/running_jobs
 
-#SBATCH --ntasks-per-node 48 #48 # tasks per node ; num of processes per node
+#SBATCH --ntasks-per-node 48 # tasks per node ; num of processes per node
 #SBATCH --cpus-per-task 1 # number of cores per task ; threads per process
 
 #SBATCH --nodes 1  # number of nodes
 
-#SBATCH --job-name=f333_step210_fb_dumpv3
-### Job name, f#chnl_step#XYZ_fb(testv)_atm/wn
+#SBATCH --job-name=f350_step228_fbv2_atm
+### Job name, f#chnl_step#XYZ_fb(v)_atm/wn
 
 ### #ntasks = #nodes x #ntasks-per-node
 ### #ncores_total = #ntasks x #cpus-per-task
@@ -30,7 +30,7 @@
 
 #SBATCH --mem=550G           # max mem requested, per node, baseline 550G
 ### Maximum requested time (days-hrs:min:sec)
-#SBATCH --time 0-01:30:00    #estimated runtime max, baseline 0-01:00:00 
+#SBATCH --time 0-01:00:00    #estimated runtime max, baseline 0-01:00:00 
 
 ### #SBATCH --mail-type=ALL   # notifications for job done & fail
 ### #SBATCH --mail-user=adev@astro.uni-bonn.de #user email for updates
@@ -83,12 +83,12 @@ echo ""
 ### section 4 - Set Job parameters
 ####  CONFIG   ####
 ###################
-CHANNEL=333
-STEP='step210'
+CHANNEL=350
+STEP='step228'
 INDIR='data_CII_tomo_ATM'
-OUTDIR='outmaps_fb_DUMPv3'
+OUTDIR='outmaps_fbv2_ATM'
 GRP_SIZE=2 #4
-NOTES='Steps: Poly Detrend, AZ Template corr, CM removal with regress, PCAv2 upto 0.1% var removed - redist. False, 2 groups'
+NOTES='2 groups; Steps: Poly Detrend, AZ Template corr, No CM removal, PCA 3 comp., jy/sr units'
 
 echo "***** CONFIG *****"
 echo "CHANNEL: $CHANNEL"

@@ -124,7 +124,6 @@ def main():
         # Write notes
         notes_file = os.path.join(savemaps_dir, f'notes_f{channel_id}_{step}.txt')
         with open(notes_file, 'w') as f:
-            # f.write(f"Poly Detrend; No CM; PCA: 5 leading components removed along axis 1; Turnarounds included \n")
             f.write(f"{note_msg} \n")
     
     else:
@@ -146,7 +145,8 @@ def main():
     # Metadata fields to load
     meta_list = ["name", "uid", "telescope", "session", 
                 "el_noise_model", "noise_model", "scan_el", 
-                "scan_max_az", "scan_max_el", "scan_min_az", "scan_min_el"]
+                "scan_max_az", "scan_max_el", "scan_min_az", "scan_min_el",
+                "realization_name", "realization_uid", "FPI_channel", "FPI_step", "freq"]
 
     # Shared data fields to load
     shared_list = ["azimuth", "elevation", "times",
@@ -228,30 +228,35 @@ def main():
     ### Data Level 3a: Regress out 2D polynomials
     log_global.info_rank(f"Regress out 2D polynomials...", comm)
     poly2d_filter = toast.ops.PolyFilter2D()
-    poly2d_filter.order = 2 #3
+    poly2d_filter.order = 3
     poly2d_filter.enabled = False  # Toggle to False to disable
     poly2d_filter.apply(data)
     log_global.info_rank(f"2D polynomial filtering done in", comm, timer = timer)   
 
-    # ### Data Level 4: PCA Component Removal
-    # log_global.info_rank(f"PCA Component Removal...", comm)
-    # pca_clean = ccat_ops.PCAComp_removal(name="pca_clean")
-    # pca_clean.n_components = 4 #3
-    # pca_clean.enabled = False  # Toggle to False to disable
-    # pca_clean.apply(data)
-    # log_global.info_rank(f"PCA done in", comm, timer = timer)
-    
-    ### Data Level 4a: PCA Component Removal 2
-    log_global.info_rank(f"PCA Component Removal 2...", comm)
-    pca_clean = ccat_ops.PCAComp_removal2(name="pca_clean")
-    pca_clean.n_components = None #4 #3
-    pca_clean.redistribute = False
+    ### Data Level 4: PCA Component Removal
+    log_global.info_rank(f"PCA Component Removal...", comm)
+    pca_clean = ccat_ops.PCAComp_removal(name="pca_clean")
+    pca_clean.n_components = 3
     pca_clean.enabled = True  # Toggle to False to disable
     pca_clean.apply(data)
     log_global.info_rank(f"PCA done in", comm, timer = timer)
     
+    ### Data Level 4a: PCA Component Removal 2
+    # log_global.info_rank(f"PCA Component Removal 2...", comm)
+    # pca_clean = ccat_ops.PCAComp_removal2(name="pca_clean")
+    # pca_clean.n_components = None #4 #3
+    # pca_clean.redistribute = False
+    # pca_clean.enabled = True  # Toggle to False to disable
+    # pca_clean.apply(data)
+    # log_global.info_rank(f"PCA done in", comm, timer = timer)
+    
     log_global.info_rank(f"Filtering done in", comm, timer = timer_global)  
-    # exit(1)
+        
+    ### Convert data units to Jy/sr
+    data_convert = ccat_ops.convert_to_jysr(name="convert_to_jysr")
+    data_convert.enabled = True  # Toggle to False to disable
+    data_convert.apply(data)
+    log_global.info_rank(f"Data unit conversion done in", comm, timer = timer)
     
     #=============================#
     ### Binning

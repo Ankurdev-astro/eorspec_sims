@@ -1,4 +1,5 @@
 from .filters import remove_slope_1d, az_el_correction, pca_component_removal, remove_global_poly
+from .helper_scripts.convert_units import convert_K_jysr
 
 from toast.ops import Operator
 from toast.observation import default_values as defaults
@@ -651,3 +652,65 @@ class PCAComp_removal2(Operator):
             "shared": list(),
             "detdata": list(),
         }
+        
+        
+#########################################
+#---------------------------------------#
+
+
+### Units converter: K to jy/sr
+@trait_docs
+class convert_to_jysr(Operator):
+    """Operator which the TOD data from K units to jy/sr units"""
+    API = Int(0, help="Internal interface version for this operator")
+
+    det_data = Unicode(
+        defaults.det_data, help="Observation detdata key apply filtering to"
+    )
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        return
+
+    @function_timer
+    def _exec(self, data, use_accel=None, **kwargs):
+        log = Logger.get()
+        
+        # Kernel selection
+        implementation, use_accel = self.select_kernels(use_accel=use_accel)
+        for obs in data.obs:
+            # Only operate on local detectors for this process
+            local_dets = obs.local_detectors
+            freq_GHz = float(obs["freq"].to_value()) # in GHz
+            # log.info(f"Converting to Jy/sr: Obs {obs.name} at {freq_GHz} GHz")
+
+            for det in local_dets:
+                local_detdata_K = asarray(obs.detdata[self.det_data][det])
+                arr_jysr = convert_K_jysr(local_detdata_K, freq_GHz)
+                
+                obs.detdata[self.det_data][det] = arr_jysr
+                del arr_jysr, local_detdata_K
+
+            # Synchronize after processing
+            if obs.comm.comm_group is not None:
+                obs.comm.comm_group.barrier()
+        return
+
+    def _finalize(self, data, **kwargs):
+        return
+
+    def _requires(self):
+        req = {
+            "meta": list(),
+            "shared": list(),
+            "detdata": [self.det_data],
+        }
+        return req
+
+    def _provides(self):
+        prov = {
+            "meta": list(),
+            "shared": list(),
+            "detdata": list(),  # Does not provide new detdata
+        }
+        return prov 
