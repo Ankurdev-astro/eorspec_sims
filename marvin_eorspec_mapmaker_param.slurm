@@ -26,6 +26,7 @@
 
 #SBATCH --nodes 1  # number of nodes
 
+### To select row corresponding to PARAM_ID, set SLURM_ARRAY_TASK_ID to PARAM_ID 
 #SBATCH --array=0-21 #0-21
 
 ### #ntasks = #nodes x #ntasks-per-node
@@ -91,8 +92,16 @@ echo ""
 ### section 4 - Set Job parameters
 ####  CONFIG   ####
 ###################
-# params.csv: array_id,channel,step
-# Params file (relative to submission dir)
+
+##### SET CONFIG PARAMS HERE #####
+INDIR='data_CII_tomo_SIGONLY'
+OUTDIR='outmaps_fb_SIGONLY'
+GRP_SIZE=2 #4
+NOTES='2 Groups; Sig Only; Steps: No filter, Units converted'
+##################################
+
+### params.csv: array_id,channel,step
+### Params file (relative to submission dir)
 PARAMS_FILE="${PARAMS_FILE:-params.csv}"
 echo "Loading params file: $PARAMS_FILE"
 if [[ ! -f "$PARAMS_FILE" ]]; then
@@ -100,15 +109,11 @@ if [[ ! -f "$PARAMS_FILE" ]]; then
   exit 2
 fi
 
-# Select the current array task’s row from PARAMS_FILE (skip header, then pick Nth line)
-# Split the row by commas and assign 2nd → CHANNEL, 3rd → STEP (ignore 1st column)
-# N_DETS is set but unused
+### Select the current array task’s row from PARAMS_FILE (skip header, then pick Nth line)
+### To select row corresponding to PARAM_ID, set SLURM_ARRAY_TASK_ID to PARAM_ID 
+### Split the row by commas and assign 2nd → CHANNEL, 3rd → STEP (ignore 1st column)
+### N_DETS is set but unused
 IFS=',' read -r _ CHANNEL STEP N_DETS < <(tail -n +2 "$PARAMS_FILE" | sed -n "$((SLURM_ARRAY_TASK_ID+1))p")
-
-INDIR='data_CII_tomo_NOSIG'
-OUTDIR='outmaps_fbv2_NOSIG'
-GRP_SIZE=2 #4
-NOTES='no input sig, wn + atm noise; 2 groups; Steps: Poly Detrend, AZ Template corr, No CM removal, PCA 3 comp., jy/sr units'
 
 echo "***** CONFIG *****"
 echo "CHANNEL: $CHANNEL"

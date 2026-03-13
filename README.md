@@ -10,6 +10,7 @@ If you intend to use these simulations, please get in touch with the correspondi
 Note: The simulation pipeline uses hybrid parallelism with OpenMP threading and MPI to run efficiently across multiple nodes. Large detector counts and intermediate buffers can require high memory per node, and full instrument runs may produce up to roughly 15 TB of output. Therefore, it is recommended to run these simulations on an High Performance Computing (HPC) cluster. This simulation was tested on the University of Bonn [Marvin Cluster](https://www.hpc.uni-bonn.de/en/systems/marvin).
 
 ---
+### Workflow Overview:
 The workflow uses the [Time Ordered Astrophysics Scalable Tools](https://github.com/hpc4cmb/toast/tree/toast3) (TOAST) framework and I defined a spectrometer focal-plane set-up for the EoR-Spec project to be compatible with this workflow. The focal-plane used in this project can be tracked at: [eorspec_focalplane](https://github.com/Ankurdev-astro/eorspec_focalplane).
 A flowchart of the simulation workflow is shown below:
 
@@ -22,8 +23,19 @@ The main timestream simulation including scanning, adding instrumental noise and
 
 The `*.slurm` scripts are designed to run the above scripts on an HPC cluster and used to set [SLURM](https://slurm.schedmd.com/quickstart.html) parameters such as number of threads, number of MPI processes, number of nodes and memory per node needed for the HPC job. `slurm_job_launcher.sh` is used to assist with launching the SLURM jobs across multiple nodes for the different spectral bins.
 
+### How to run scripts in this repository:
+
+The `marvin_eorspec_schedules_param.slurm` script need not be edited for different configurations of simulations. For `marvin_eorspec_mapmaker_param.slurm`, the  `CONFIG` parameters must be set in `Section 4` of the scipt.
+
+The `params.csv` should hold all the FPI set-up in the format: `[PARAM_ID,CHANNEL,STEP,N_DETS]`.
+
+The `*.slurm` scripts read information from the `slurm_job_launcher.sh` and parse the `params.csv` file. The `slurm_job_launcher.sh` needs to be configured either for a *Simulation* run or a *Map-making* run.
+The `sim_data_eorspec_mpi.py` and `write_toast_maps.py` scripts need to be set up for the simulation and map-making configuration. For example: toggle atmosphere, input signal or instrument noise simulations; or toggle different stages of map-making pipeline. The output directory also must be updated here. 
+
+This would be done uniformly through a `CONFIG` file in a future update.
+
 ---
-EoR-Spec Focal-plane simulation for 15 different spectrometer steps (cavity gaps) is shown here:
+**EoR-Spec Focal-plane simulation for 15 different spectrometer steps (cavity gaps) is shown here:**
 
 <img src="aux/public_plots/EoR-Spec_anim_FPI_01fps.gif" alt="Simulated focal-plane" width="600">
 

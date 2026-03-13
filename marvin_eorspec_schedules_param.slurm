@@ -12,11 +12,13 @@
 ### launching SLURM ARRAY jobs for each schedule independently
 ### This launches array jobs for all schedules
 ### for the channel and step as listed in params.csv
-### for the passed PARAM_ID
+### and for the passed PARAM_ID
 ### Params must be set in params.csv
 ### Format: [PARAM_ID,CHANNEL,STEP,N_DETS] 
-### NOTE: export PARAM_ID value must be set
+### NOTE: export PARAM_ID value must be set at job launch
 ### NOTE: Job name must be set in launcher.sh
+### run as: for i in $(seq 0 21); do PARAM_ID=$i ./slurm_job_launcher.sh; done
+### or run: PARAM_ID=0 ./slurm_job_launcher.sh 
 
 ### section 1 - SLURM params
 
